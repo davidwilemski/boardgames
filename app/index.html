@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="/static/bootstrap.min.css" />
+<script src="/static/jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+<a id="toggle" class="btn btn-large btn-error">Not enabled, yet.</a>
+<script type="text/javascript">
+function set_button(bit) {
+    if(bit === 0){
+        $("a#toggle").removeClass("btn-success").addClass("btn-error")
+                     .html("Please wait...");
+    } else {
+        $("a#toggle").removeClass("btn-error").addClass("btn-success")
+                     .html("Click to send...");
+    }
+}
+var ws = new WebSocket("ws://localhost:12000/ws/binary");
+ws.onmessage = function(e) {
+    console.log("received message: " + e.data);
+    if(e.data === "1") { set_button(1); }
+    else if(e.data === "0") { set_button(0); }
+}
+$("a#toggle").on("click", function() {
+    if($("a#toggle").is(".btn-success")) {
+        console.log("sending: 1");
+        ws.send("1");
+    } else {
+        console.log("sending: 0");
+        ws.send("0");
+    }
+});
+
+$(document).ready(function () {
+    set_button(1);
+});
+</script>
+</body>
+</html>
