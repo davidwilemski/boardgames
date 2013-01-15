@@ -5,7 +5,7 @@ import os
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("index.html")
+        self.render("hex.html")
 
 class BinaryWebSocket(tornado.websocket.WebSocketHandler):
     def open(self):
@@ -20,10 +20,12 @@ class BinaryWebSocket(tornado.websocket.WebSocketHandler):
     def on_close(self):
         print "websocket closed"
 
+this_dir = os.path.abspath(os.path.dirname(__file__))
 application = tornado.web.Application([
     (r"/", MainHandler),
     (r"/ws/binary", BinaryWebSocket),
-], **{"static_path": os.path.join(os.path.abspath(os.path.dirname(__file__)), "static")})
+], **{"static_path": os.path.join(this_dir, "static"),
+      "template_path": os.path.join(this_dir, "templates")})
 
 if __name__ == "__main__":
     application.listen(12000)
