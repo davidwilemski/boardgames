@@ -3,11 +3,33 @@ function Hex(width, height) {
     this._width = null;
     this._height = null;
     this._hex_width = 50;
+    this._points = [];
 
     this.create = function(width, height) {
         this._width = width;
         this._height = height;
         this.draw_board();
+        $('#hex-canvas').on('click',
+                            data = { hex: this },
+                            this.click_handler);
+    };
+
+    this.click_handler = function(e, hex) {
+        for (var i = 0; i < e.data.hex._width * e.data.hex._height; i++) {
+            var x = e.clientX;
+            var y = e.clientY;
+            var delta_x = Math.abs(x - e.data.hex._points[i][0]);
+            var delta_y = Math.abs(y - e.data.hex._points[i][1]);
+            var distance = Math.sqrt(delta_x * delta_x + delta_y * delta_y);
+            if (distance <= 20) {
+                console.log(distance);
+                console.log(i % e.data.hex._width, i / e.data.hex._height)
+                e.data.hex.color_hex(i % e.data.hex._width,
+                                     Math.floor(i / e.data.hex._height),
+                                     'purple');
+                break;
+            }
+        }
     };
 
     this.draw_hex = function(x, y, row, color) {
@@ -40,9 +62,14 @@ function Hex(width, height) {
     };
 
     this.draw_board = function() {
-        for (var y = 0; y < this._height; y++)
-            for (var x = 0; x < this._width; x++)
-                this.draw_hex(25 + this._hex_width * x + 25 * y, 25 + this._hex_width * y, y);
+        for (var y = 0; y < this._height; y++) {
+            for (var x = 0; x < this._width; x++) {
+                var x_center = 25 + this._hex_width * x + 25 * y;
+                var y_center = 25 + this._hex_width * y;
+                this.draw_hex(x_center, y_center, y);
+                this._points.push([x_center, y_center + 3.4 - 6.8 * y]);
+            }
+        }
 
         return true;
     };
@@ -51,7 +78,10 @@ function Hex(width, height) {
         if (x < 0 || x >= this._width) return false;
         if (y < 0 || x >= this._height) return false;
 
-        return this.draw_hex(25 + this._hex_width * x + 25 * y, 25 + this._hex_width * y, x, color);
+        return this.draw_hex(25 + this._hex_width * x + 25 * y,
+                             25 + this._hex_width * y,
+                             y,
+                             color);
     };
 
     this.create(width, height);
