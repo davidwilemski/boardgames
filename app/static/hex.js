@@ -1,5 +1,12 @@
-function Hex(width, height) {
-    this._board = document.getElementById('hex-canvas').getContext('2d');
+function Hex(board, width, height) {
+    /*
+     * board - 2d context of the canvas you wanna draw on
+     * width - number of tiles wide
+     * height - number of tiles tall
+     */
+    this._boardSelector = board;
+    this._board = $(this._boardSelector)[0];
+    this._ctx = this._board.getContext('2d');
     this._width = null;
     this._height = null;
     this._hex_width = 50;
@@ -9,9 +16,9 @@ function Hex(width, height) {
         this._width = width;
         this._height = height;
         this.draw_board();
-        $('#hex-canvas').on('click',
-                            data = { hex: this },
-                            this.click_handler);
+        $(this._boardSelector).on('click',
+                data = { hex: this },
+                this.click_handler);
     };
 
     this.click_handler = function(e, hex) {
@@ -23,7 +30,7 @@ function Hex(width, height) {
             var distance = Math.sqrt(delta_x * delta_x + delta_y * delta_y);
             if (distance <= 20) {
                 console.log(distance);
-                console.log(i % e.data.hex._width, i / e.data.hex._height)
+                console.log(i % e.data.hex._width, i / e.data.hex._height);
                 e.data.hex.color_hex(i % e.data.hex._width,
                                      Math.floor(i / e.data.hex._height),
                                      'purple');
@@ -42,20 +49,20 @@ function Hex(width, height) {
         var _start_x = x;
         var _start_y = y - _side_length / 2.0 - _b + (_offset - (2 * _offset) * row);
 
-        this._board.beginPath();
-        this._board.moveTo(_start_x, _start_y);
-        this._board.lineTo(_start_x + _a, _start_y + _b);
-        this._board.lineTo(_start_x + _a, _start_y + _b + _side_length);
-        this._board.lineTo(_start_x, _start_y + _b * 2 + _side_length);
-        this._board.lineTo(_start_x - _a, _start_y + _b + _side_length);
-        this._board.lineTo(_start_x - _a, _start_y + _b);
-        this._board.closePath();
+        this._ctx.beginPath();
+        this._ctx.moveTo(_start_x, _start_y);
+        this._ctx.lineTo(_start_x + _a, _start_y + _b);
+        this._ctx.lineTo(_start_x + _a, _start_y + _b + _side_length);
+        this._ctx.lineTo(_start_x, _start_y + _b * 2 + _side_length);
+        this._ctx.lineTo(_start_x - _a, _start_y + _b + _side_length);
+        this._ctx.lineTo(_start_x - _a, _start_y + _b);
+        this._ctx.closePath();
 
         if (color) {
-            this._board.fillStyle = color;
-            this._board.fill();
+            this._ctx.fillStyle = color;
+            this._ctx.fill();
         } else {
-            this._board.stroke();
+            this._ctx.stroke();
         }
 
         return true;
